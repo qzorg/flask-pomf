@@ -1,4 +1,4 @@
-Imageboard Software written in Flask. Designed to have very little JS, and should be able to operate with none at all.
+A pomf clone written in Flask. Designed to have very little JS, and should be able to operate with none at all.
 
 ## Creating a Dev Environment
 
@@ -15,9 +15,9 @@ Imageboard Software written in Flask. Designed to have very little JS, and shoul
 ## Deploying on Apache wsgi
 
 1. apt-get install git apache2 libapache2-mod-wsgi libjpeg-dev zlib1g-dev python python-dev python-pip libffi-dev
-2. cd /var/www/ && git clone https://github.com/qzorg/devchan-engine.git
-3. Modify the Deploy/app.wsgi file to fit your needs, then copy it to your $SITEROOT/devchan/.
-4. Edit the Deploy/devchan.conf and replace all lines that start with $ with your own information. Copy the devchan.conf file to your /etc/apache2/sites-enabled/.
+2. cd /var/www/ && git clone https://github.com/qzorg/flask-pomf.git
+3. Modify the Deploy/app.wsgi file to fit your needs, then copy it to your $SITEROOT/$sitename/.
+4. Edit the Deploy/$SITENAME.conf and replace all lines that start with $ with your own information. Copy the $SITENAME.conf file to your /etc/apache2/sites-enabled/.
 5. pip install -r requirements.txt.
 6. Edit config.py to include direct paths to directories such as static/images/, static/thumbs, and the sqlite database.
 6. service apache2 reload.
