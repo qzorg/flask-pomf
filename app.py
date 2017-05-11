@@ -32,6 +32,12 @@ class users(db.Model):
     id        = db.Column(db.Integer, primary_key = True)
     username   = db.Column(db.String)
     pw_hash   = db.Column(db.String)
+
+
+class banned(db.Model):
+   id = db.Column('banned', db.Integer, primary_key = True)
+   date = db.Column(db.String)
+   ip = db.Column(db.String)
 db.create_all()
 
 
@@ -83,31 +89,23 @@ def add_image():
             flash('No selected file')
             return redirect(request.url)
         if file and allowed_file(file.filename):
-            extension = os.path.splitext(file.filename)[1]
-		
-            filename = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(25))
-            ffile = filename + extension
-
-
-            postdate = datetime.now()
             ipaddr = request.environ['REMOTE_ADDR']
-            flname= str(ffile)
-            pdate = str(postdate)
-            ipdr = str(ipaddr)
-            		
-
-            newImg = images(date = pdate, ipaddr = ipdr, filename = flname)
-            db.session.add(newImg)
-            db.session.commit()
-
-
-
-
-
-
-            file.save(os.path.join("static/useruploads/", ffile))
-            flash('/content/' + ffile)
-            return redirect(request.url)
+            if db.session.query(banned).filter_by(ip=ipaddr).all():
+               flash('You are banned, fuck off')
+            else:   
+               extension = os.path.splitext(file.filename)[1]
+               filename = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(25))
+               ffile = filename + extension
+               postdate = datetime.now()
+               flname= str(ffile)
+               pdate = str(postdate)
+               ipdr = str(ipaddr)
+               newImg = images(date = pdate, ipaddr = ipdr, filename = flname)
+               db.session.add(newImg)
+               db.session.commit()
+               file.save(os.path.join("static/useruploads/", ffile))
+               flash('/content/' + ffile)
+               return redirect(request.url)
     return render_template('index.html')
 
 
@@ -130,7 +128,13 @@ def showposts():
 
 	return render_template('admin.html', posts = posts)
 
+@app.route('/bans', methods=['GET','POST'])
+@requires_auth
+def showbans():
+   bans = get_bans()
+   bans = reversed(bans)
 
+   return render_template('bans.html', bans = bans)
 
 @app.route('/delete/<variable>', methods=['GET'])
 @requires_auth
@@ -139,6 +143,24 @@ def delfile(variable):
     images.query.filter_by(filename=variable).delete()
     db.session.commit()
     return redirect("/admin")
+
+@app.route('/ban/<variable>', methods=['GET'])
+@requires_auth
+def banip(variable):
+   date=datetime.now()
+   ip=variable
+   ban=banned(date=date, ip=ip)
+   db.session.add(ban)
+   db.session.commit()
+   return redirect("/admin")
+
+@app.route('/unban/<variable>', methods=['GET'])
+@requires_auth
+def unban(variable):
+   ip=str(variable)
+   banned.query.filter_by(ip=ip).delete()
+   db.session.commit()
+   return redirect("/bans")
 
 @app.route('/changepassword', methods = ['GET', 'POST'])
 @requires_auth
@@ -172,6 +194,8 @@ def allowed_file(filename):
 
 def get_posts():
     return db.session.query(images).all()
+def get_bans():
+   return db.session.query(banned).all()
 
 def usercreate(name, password):
 	pw_hash = generate_password_hash(password)

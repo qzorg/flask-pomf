@@ -28,7 +28,8 @@
                   <td><a href="/static/useruploads/{{ post.filename }}"><img src="/static/useruploads/{{ post.filename }}" height="5%" width="auto" </a> </href></td>
                   <td>{{ post.date }}</td>
                   <td>{{ post.ipaddr }}</td>
-		  <td> <a href="/delete/{{ post.filename }}"> Delete</href></td>
+		              <td> <a href="/delete/{{ post.filename }}"> Delete</a></td>
+                  <td> <a href="/ban/{{ post.ipaddr }}"> Ban </a></td>
                </tr>
             {% endfor %}
          </tbody>
@@ -37,7 +38,7 @@
 
 
 <div class="footer">
-<a href="/changepassword"> Change your password </href>
+    <a href="/changepassword"> Change Your Password </a> &nbsp; | &nbsp; <a href="/bans"> View Bans </a>
 </div>
 	</body>
 </html>
